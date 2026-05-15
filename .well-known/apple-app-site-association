@@ -1,0 +1,16 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": ["P42H54CGU6.com.sheila.kalamansi"],
+        "components": [
+          {
+            "/": "/invite/*",
+            "comment": "Matches invite links"
+          }
+        ]
+      }
+    ]
+  }
+}
