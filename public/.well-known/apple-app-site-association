@@ -8,6 +8,14 @@
           {
             "/": "/invite/*",
             "comment": "Matches invite links"
+          },
+          {
+            "/": "/recipe/*",
+            "comment": "Matches recipe share links"
+          },
+          {
+            "/": "/kitchen/*",
+            "comment": "Matches kitchen page links"
           }
         ]
       }
