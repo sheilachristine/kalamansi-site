@@ -1,12 +1,13 @@
 {
-	"compatibility_date": "2026-05-29",
-	"compatibility_flags": ["global_fetch_strictly_public"],
-	"name": "kalamansi-site",
-	"assets": {
-		"directory": "./dist/client",
-		"binding": "ASSETS"
-	},
-	"observability": {
-		"enabled": true
-	}
+  "name": "kalamansi-site",
+  "compatibility_date": "2026-05-29",
+  "compatibility_flags": ["global_fetch_strictly_public"],
+  "account_id": "838dc01d264d43408261d10a450d0656",
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  }
 }
