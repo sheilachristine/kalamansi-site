@@ -406,6 +406,9 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
           margin-top: 48px;
           padding-bottom: 96px;
         }
+        .body-wrap--single {
+          grid-template-columns: 1fr;
+        }
         .adapt-body p { font-size: 24px; }
         .app-cta h2 { font-size: 40px; }
       }
@@ -473,32 +476,31 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
     </section>
 
     <!-- Body -->
-    <div class="body-wrap">
+    <div class={`body-wrap${recipe.my_adaptations ? '' : ' body-wrap--single'}`}>
 
-      <!-- Main column -->
-      <div>
-        {/* My adaptations / note */}
-        {recipe.my_adaptations && (
+      {/* Main column — only when there's a note */}
+      {recipe.my_adaptations && (
+        <div>
           <article class="adapt-block">
             <p class="eyebrow">{ownerName}&rsquo;s note</p>
             <div class="adapt-body">
               <p>{recipe.my_adaptations}</p>
             </div>
           </article>
-        )}
 
-        {/* Instructions — Tier 1 only */}
-        {tier === 1 && instructions.length > 0 && (
-          <section class="instructions">
-            <p class="eyebrow">Instructions</p>
-            <ol>
-              {instructions.map((step: string) => (
-                <li>{step}</li>
-              ))}
-            </ol>
-          </section>
-        )}
-      </div>
+          {/* Instructions — Tier 1 only */}
+          {tier === 1 && instructions.length > 0 && (
+            <section class="instructions">
+              <p class="eyebrow">Instructions</p>
+              <ol>
+                {instructions.map((step: string) => (
+                  <li>{step}</li>
+                ))}
+              </ol>
+            </section>
+          )}
+        </div>
+      )}
 
       <!-- Sidebar -->
       <aside class="side">
