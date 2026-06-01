@@ -10,7 +10,7 @@ const { data: recipe, error } = await supabase
   .eq("id", Number(id))
   .single();
 
-if (error || !recipe || !recipe.is_shareable) {
+if (error || !recipe || recipe.recipe_status !== 'keeper' || recipe.is_hidden) {
   return new Response(null, { status: 404, statusText: "Not found" });
 }
 
