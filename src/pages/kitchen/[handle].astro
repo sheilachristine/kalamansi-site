@@ -15,10 +15,10 @@ if (!profile) {
 
 const { data: recipes } = await supabase
   .from('recipes')
-  .select('id, name, source, link, attribution, cookbook_name, my_adaptations, is_original, recipe_status, auto_tags')
+  .select('id, name, source, link, attribution, cookbook_name, my_adaptations, is_original, recipe_status, auto_tags, kitchen_section')
   .eq('household_id', profile.household_id)
   .eq('recipe_status', 'keeper')
-  .eq('is_hidden', false)
+  .or('is_hidden.eq.false,is_hidden.is.null')
   .order('name', { ascending: true });
 
 const recipeCount = recipes?.length ?? 0;
@@ -35,20 +35,37 @@ function truncate(text: string, max: number): string {
   return text.slice(0, max).trimEnd() + '\u2026';
 }
 
-const FORMAT_EMOJI_MAP: Record<string, string> = {
-  soup: "🍲", bowl: "🥣", salad: "🥗", pasta: "🍝", baked_good: "🧁",
-  breakfast: "🍳", sandwich: "🥪", stew: "🫕", curry: "🍛", stir_fry: "🥢",
-  snack: "🍿", wrap: "🌯", rice: "🍚", noodles: "🍜", baked: "🥘",
-  roast: "🥩", grilled: "🔥", sushi: "🍣", tacos: "🌮", pizza: "🍕",
-  dessert: "🍰", other: "🍴"
-};
+const SECTION_ORDER = [
+  { key: 'baked_goods_desserts', label: 'Baked goods & desserts' },
+  { key: 'pasta',                label: 'Pasta' },
+  { key: 'soups',                label: 'Soups' },
+  { key: 'protein',              label: 'Protein' },
+  { key: 'salads_vegetables',    label: 'Salads & vegetables' },
+] as const;
 
-const getRecipeEmoji = (recipe: any) => {
-  const format = recipe.auto_tags?.format;
-  return format ? (FORMAT_EMOJI_MAP[format] ?? "🍽️") : "🍽️";
-};
+type SectionKey = typeof SECTION_ORDER[number]['key'];
 
-const WARM_TONES = ["#E8E3D8", "#ECE3C6", "#DDDDC2", "#E0CFB8", "#E5C9BA", "#F0E8D8"];
+function getKitchenSection(recipe: any): SectionKey {
+  if (recipe.kitchen_section && SECTION_ORDER.some(s => s.key === recipe.kitchen_section)) {
+    return recipe.kitchen_section as SectionKey;
+  }
+  const tags = typeof recipe.auto_tags === 'string' ? JSON.parse(recipe.auto_tags) : (recipe.auto_tags ?? {});
+  const format = tags.format;
+  const protein = tags.protein;
+  if (format === 'baked_good') return 'baked_goods_desserts';
+  if (format === 'pasta') return 'pasta';
+  if (format === 'soup') return 'soups';
+  if (format === 'salad') return 'salads_vegetables';
+  if (protein && protein !== 'none') return 'protein';
+  return 'baked_goods_desserts';
+}
+
+const grouped = new Map<SectionKey, typeof recipes>(
+  SECTION_ORDER.map(s => [s.key, []])
+);
+for (const r of (recipes ?? [])) {
+  grouped.get(getKitchenSection(r))!.push(r);
+}
 ---
 
 <!doctype html>
@@ -189,14 +206,26 @@ const WARM_TONES = ["#E8E3D8", "#ECE3C6", "#DDDDC2", "#E0CFB8", "#E5C9BA", "#F0E
         letter-spacing: 0.15px;
       }
 
+      /* ─── sections ────────────────────────────── */
+      .section-label {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 32px var(--bleed) 0;
+        font-family: var(--font-body);
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--fg);
+        line-height: 1.2;
+      }
+
       /* ─── grid ─────────────────────────────────── */
       .grid {
         max-width: var(--max-width);
         margin: 0 auto;
-        padding: 24px var(--bleed) 64px;
+        padding: 16px var(--bleed) 48px;
         display: grid;
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: 12px;
       }
       .card {
         background: var(--surface);
@@ -212,32 +241,8 @@ const WARM_TONES = ["#E8E3D8", "#ECE3C6", "#DDDDC2", "#E0CFB8", "#E5C9BA", "#F0E
         border-color: #D7D0C5;
         transform: translateY(-1px);
       }
-      .card-photo {
-        aspect-ratio: 3 / 2;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-      }
-      .card-emoji {
-        font-size: 72px;
-        opacity: 0.4;
-        line-height: 1;
-      }
-      .card-format-label {
-        position: absolute;
-        bottom: 8px;
-        left: 10px;
-        font-size: 10px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        color: rgba(54, 50, 48, 0.45);
-        line-height: 1;
-      }
       .card-body {
-        padding: 16px 18px 18px;
+        padding: 12px 14px;
         display: flex;
         flex-direction: column;
         gap: 6px;
@@ -352,7 +357,7 @@ const WARM_TONES = ["#E8E3D8", "#ECE3C6", "#DDDDC2", "#E0CFB8", "#E5C9BA", "#F0E
         .bio { font-size: 16px; }
         .grid {
           grid-template-columns: repeat(3, 1fr);
-          gap: 28px;
+          gap: 12px;
           padding: 36px var(--bleed) 72px;
         }
         .cta { padding: 64px var(--bleed); }
@@ -391,30 +396,35 @@ const WARM_TONES = ["#E8E3D8", "#ECE3C6", "#DDDDC2", "#E0CFB8", "#E5C9BA", "#F0E
     </section>
 
     <!-- recipe grid -->
-    <main class="grid">
-      {recipes && recipes.map((recipe, i) => (
-        <a class="card" href={`/recipe/${recipe.id}`}>
-          <div class="card-photo" style={`background: ${WARM_TONES[i % 6]};`}>
-            <span class="card-emoji">{getRecipeEmoji(recipe)}</span>
-            {(recipe.auto_tags?.format || recipe.auto_tags?.dish_type) && (
-              <span class="card-format-label">{(recipe.auto_tags?.format ?? recipe.auto_tags?.dish_type).replace(/_/g, ' ')}</span>
-            )}
-          </div>
-          <div class="card-body">
-            {recipe.is_original ? (
-              <span class="badge">Original</span>
-            ) : recipe.attribution ? (
-              <div class="src">Adapted from <strong>{recipe.attribution}</strong></div>
-            ) : recipe.cookbook_name ? (
-              <div class="src">From <strong>{recipe.cookbook_name}</strong></div>
-            ) : null}
-            <h3 class="dish">{recipe.name}</h3>
-            {recipe.my_adaptations && (
-              <p class="note">{truncate(recipe.my_adaptations, 100)}</p>
-            )}
-          </div>
-        </a>
-      ))}
+    <main>
+      {SECTION_ORDER.map(s => {
+        const items = grouped.get(s.key)!;
+        if (items.length === 0) return null;
+        return (
+          <>
+            <h2 class="section-label">{s.label}</h2>
+            <div class="grid">
+              {items.map((recipe) => (
+                <a class="card" href={`/recipe/${recipe.id}`}>
+                  <div class="card-body">
+                    {recipe.is_original ? (
+                      <span class="badge">Original</span>
+                    ) : recipe.attribution ? (
+                      <div class="src">Adapted from <strong>{recipe.attribution}</strong></div>
+                    ) : recipe.cookbook_name ? (
+                      <div class="src">From <strong>{recipe.cookbook_name}</strong></div>
+                    ) : null}
+                    <h3 class="dish">{recipe.name}</h3>
+                    {recipe.my_adaptations && (
+                      <p class="note">{truncate(recipe.my_adaptations, 100)}</p>
+                    )}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </>
+        );
+      })}
     </main>
 
     <!-- CTA -->
