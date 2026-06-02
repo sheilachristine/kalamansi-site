@@ -207,15 +207,77 @@ for (const r of (recipes ?? [])) {
       }
 
       /* ─── sections ────────────────────────────── */
-      .section-label {
+      .k-section {
         max-width: var(--max-width);
         margin: 0 auto;
+      }
+      .section-label {
         padding: 32px var(--bleed) 0;
         font-family: var(--font-body);
         font-weight: 600;
         font-size: 14px;
         color: var(--fg);
         line-height: 1.2;
+      }
+      .section-toggle {
+        display: none;
+      }
+
+      /* ─── mobile collapsible ────────────────── */
+      @media (max-width: 759px) {
+        .section-toggle {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 14px var(--bleed);
+          cursor: pointer;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .section-toggle-label {
+          font-family: var(--font-body);
+          font-weight: 600;
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 0.8px;
+          color: var(--fg);
+        }
+        .section-toggle-count {
+          font-size: 11px;
+          color: var(--fg-muted);
+          font-weight: 400;
+          margin-left: 6px;
+        }
+        .section-toggle-chevron {
+          font-size: 18px;
+          color: var(--fg-muted);
+          line-height: 1;
+          transition: transform 200ms ease;
+          transform: rotate(0deg);
+        }
+        .section-toggle-chevron.open {
+          transform: rotate(180deg);
+        }
+        .section-label {
+          display: none;
+        }
+        .name {
+          font-size: 26px;
+        }
+        .hdr {
+          padding-bottom: 12px;
+        }
+        .bio {
+          font-size: 12px;
+        }
+        .section-toggle {
+          padding-top: 0;
+        }
+        .grid.k-cards {
+          display: none;
+        }
+        .grid.k-cards.open {
+          display: grid;
+        }
       }
 
       /* ─── grid ─────────────────────────────────── */
@@ -360,6 +422,9 @@ for (const r of (recipes ?? [])) {
           gap: 12px;
           padding: 36px var(--bleed) 72px;
         }
+        .k-cards {
+          display: grid !important;
+        }
         .cta { padding: 64px var(--bleed); }
         .cta-head { font-size: 32px; }
       }
@@ -401,9 +466,16 @@ for (const r of (recipes ?? [])) {
         const items = grouped.get(s.key)!;
         if (items.length === 0) return null;
         return (
-          <>
+          <div class="k-section" data-section={s.key}>
+            <div class="section-toggle">
+              <span>
+                <span class="section-toggle-label">{s.label}</span>
+                <span class="section-toggle-count">{items.length}</span>
+              </span>
+              <span class="section-toggle-chevron" set:html="&#8964;" />
+            </div>
             <h2 class="section-label">{s.label}</h2>
-            <div class="grid">
+            <div class="grid k-cards">
               {items.map((recipe) => (
                 <a class="card" href={`/recipe/${recipe.id}`}>
                   <div class="card-body">
@@ -422,7 +494,7 @@ for (const r of (recipes ?? [])) {
                 </a>
               ))}
             </div>
-          </>
+          </div>
         );
       })}
     </main>
@@ -442,5 +514,16 @@ for (const r of (recipes ?? [])) {
       <a href="/privacy">Privacy</a>
     </footer>
 
+    <script>
+      document.querySelectorAll('.section-toggle').forEach(toggle => {
+        toggle.addEventListener('click', () => {
+          const section = toggle.closest('.k-section');
+          const chevron = toggle.querySelector('.section-toggle-chevron');
+          const cards = section.querySelector('.k-cards');
+          chevron.classList.toggle('open');
+          cards.classList.toggle('open');
+        });
+      });
+    </script>
   </body>
 </html>
