@@ -35,6 +35,22 @@ function truncate(text: string, max: number): string {
   return text.slice(0, max).trimEnd() + '\u2026';
 }
 
+const SMALL_WORDS = new Set([
+  'a','an','the','and','but','or','for','nor',
+  'on','at','to','by','in','of','with','from',
+]);
+
+function toTitleCase(text: string): string {
+  const words = text.split(/\s+/);
+  return words.map((word, i) => {
+    const lower = word.toLowerCase();
+    if (i === 0 || i === words.length - 1 || !SMALL_WORDS.has(lower)) {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }
+    return lower;
+  }).join(' ');
+}
+
 const SECTION_ORDER = [
   { key: 'baked_goods_desserts', label: 'Baked goods & desserts' },
   { key: 'pasta',                label: 'Pasta' },
@@ -212,7 +228,9 @@ for (const r of (recipes ?? [])) {
         margin: 0 auto;
       }
       .section-label {
-        padding: 32px var(--bleed) 0;
+        padding: 0 var(--bleed);
+        margin-top: 16px;
+        margin-bottom: 8px;
         font-family: var(--font-body);
         font-weight: 600;
         font-size: 14px;
@@ -284,7 +302,7 @@ for (const r of (recipes ?? [])) {
       .grid {
         max-width: var(--max-width);
         margin: 0 auto;
-        padding: 16px var(--bleed) 48px;
+        padding: 16px var(--bleed) 8px;
         display: grid;
         grid-template-columns: 1fr;
         gap: 12px;
@@ -479,7 +497,6 @@ for (const r of (recipes ?? [])) {
               {items.map((recipe) => (
                 <a class="card" href={`/recipe/${recipe.id}`}>
                   <div class="card-body">
-                    <h3 class="dish">{recipe.name}</h3>
                     {recipe.is_original ? (
                       <span class="badge">Original</span>
                     ) : recipe.attribution ? (
@@ -487,6 +504,7 @@ for (const r of (recipes ?? [])) {
                     ) : recipe.cookbook_name ? (
                       <div class="src">From <strong>{recipe.cookbook_name}</strong></div>
                     ) : null}
+                    <h3 class="dish">{toTitleCase(recipe.name)}</h3>
                     {recipe.my_adaptations && (
                       <p class="note">{truncate(recipe.my_adaptations, 100)}</p>
                     )}

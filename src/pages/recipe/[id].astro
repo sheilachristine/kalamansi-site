@@ -41,6 +41,23 @@ const { data: ownerProfile } = await supabase
 const ownerName = ownerProfile?.display_name ?? 'Sheila';
 const ownerHandle = ownerProfile?.handle ?? 'sheila';
 const sourceDomain = recipe.link ? new URL(recipe.link).hostname.replace(/^www\./, '') : null;
+
+const SMALL_WORDS = new Set([
+  'a','an','the','and','but','or','for','nor',
+  'on','at','to','by','in','of','with','from',
+]);
+
+function toTitleCase(text: string): string {
+  const words = text.split(/\s+/);
+  return words.map((word, i) => {
+    const lower = word.toLowerCase();
+    if (i === 0 || i === words.length - 1 || !SMALL_WORDS.has(lower)) {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }
+    return lower;
+  }).join(' ');
+}
+
 const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
 ---
 
@@ -168,7 +185,7 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
       .source-line {
         font-size: 13px;
         color: var(--fg-muted);
-        margin-bottom: 12px;
+        margin-top: 12px;
       }
       .source-line strong {
         color: var(--fg);
@@ -182,7 +199,7 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
       .title {
         font-family: var(--font-display);
         font-weight: 600;
-        font-size: 40px;
+        font-size: 32px;
         color: var(--fg);
         letter-spacing: -0.01em;
         line-height: 1.05;
@@ -398,7 +415,7 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
           max-height: 460px;
         }
         .hero-photo .glyph { font-size: 200px; }
-        .title { font-size: 64px; max-width: 18ch; }
+        .title { font-size: 48px; max-width: 18ch; }
         .title-block { margin-top: 40px; }
         .body-wrap {
           grid-template-columns: minmax(0, 1.4fr) minmax(280px, 340px);
@@ -440,7 +457,7 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
 
     <!-- Title block -->
     <section class="title-block">
-      {/* Tier 2: source line above title */}
+      <h1 class="title">{toTitleCase(recipe.name)}</h1>
       {tier === 2 && (
         <div class="source-line">
           From{" "}
@@ -462,7 +479,6 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
           From <strong>{recipe.cookbook_name}</strong>
         </div>
       )}
-      <h1 class="title">{recipe.name}</h1>
       <div class="meta">
         {recipe.cook_count != null && recipe.cook_count > 0 && (
           <span>
