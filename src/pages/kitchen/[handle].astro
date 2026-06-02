@@ -479,6 +479,7 @@ for (const r of (recipes ?? [])) {
               {items.map((recipe) => (
                 <a class="card" href={`/recipe/${recipe.id}`}>
                   <div class="card-body">
+                    <h3 class="dish">{recipe.name}</h3>
                     {recipe.is_original ? (
                       <span class="badge">Original</span>
                     ) : recipe.attribution ? (
@@ -486,7 +487,6 @@ for (const r of (recipes ?? [])) {
                     ) : recipe.cookbook_name ? (
                       <div class="src">From <strong>{recipe.cookbook_name}</strong></div>
                     ) : null}
-                    <h3 class="dish">{recipe.name}</h3>
                     {recipe.my_adaptations && (
                       <p class="note">{truncate(recipe.my_adaptations, 100)}</p>
                     )}
