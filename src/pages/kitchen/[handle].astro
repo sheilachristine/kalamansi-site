@@ -53,10 +53,11 @@ function toTitleCase(text: string): string {
 
 const SECTION_ORDER = [
   { key: 'baked_goods_desserts', label: 'Baked goods & desserts' },
+  { key: 'breakfast',            label: 'Breakfast' },
   { key: 'pasta',                label: 'Pasta' },
   { key: 'soups',                label: 'Soups' },
+  { key: 'vegetables_sides',    label: 'Vegetables & sides' },
   { key: 'protein',              label: 'Protein' },
-  { key: 'salads_vegetables',    label: 'Salads & vegetables' },
 ] as const;
 
 type SectionKey = typeof SECTION_ORDER[number]['key'];
@@ -71,9 +72,10 @@ function getKitchenSection(recipe: any): SectionKey {
   if (format === 'baked_good') return 'baked_goods_desserts';
   if (format === 'pasta') return 'pasta';
   if (format === 'soup') return 'soups';
-  if (format === 'salad') return 'salads_vegetables';
-  if (protein && protein !== 'none') return 'protein';
-  return 'baked_goods_desserts';
+  if (format === 'breakfast' || protein === 'eggs') return 'breakfast';
+  if (format === 'salad') return 'vegetables_sides';
+  if (protein && protein !== 'none' && protein !== 'eggs') return 'protein';
+  return 'vegetables_sides';
 }
 
 const grouped = new Map<SectionKey, typeof recipes>(
