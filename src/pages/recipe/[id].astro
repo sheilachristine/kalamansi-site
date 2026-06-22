@@ -42,6 +42,27 @@ const ownerName = ownerProfile?.display_name ?? 'Sheila';
 const ownerHandle = ownerProfile?.handle ?? 'sheila';
 const sourceDomain = recipe.link ? new URL(recipe.link).hostname.replace(/^www\./, '') : null;
 
+// Fetch recipe notes (replaces my_adaptations)
+const { data: noteRows } = await supabase
+  .from("recipe_adaptations")
+  .select("note, created_at")
+  .eq("recipe_id", Number(id))
+  .order("created_at", { ascending: false, nullsFirst: false });
+
+const notes = (noteRows ?? []).map((row) => ({
+  note: row.note,
+  dateLabel: row.created_at
+    ? new Date(row.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+    : "earlier",
+}));
+
+const hasNotes = notes.length > 0;
+const latestNote = hasNotes ? notes[0] : null;
+const olderNotes = notes.slice(1);
+const VISIBLE_OLDER = 2;
+const visibleOlder = olderNotes.slice(0, VISIBLE_OLDER);
+const hiddenOlder = olderNotes.slice(VISIBLE_OLDER);
+
 const SMALL_WORDS = new Set([
   'a','an','the','and','but','or','for','nor',
   'on','at','to','by','in','of','with','from',
@@ -248,6 +269,55 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
         font-weight: 600;
       }
 
+      /* ---- Older notes list ---- */
+      .notes-list {
+        margin-top: 8px;
+        border-top: 1px solid var(--border);
+        padding-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .note-row {
+        display: flex;
+        gap: 14px;
+        align-items: baseline;
+      }
+      .note-date {
+        font-family: var(--font-body);
+        font-size: 13px;
+        color: var(--fg-muted);
+        flex-shrink: 0;
+        min-width: 100px;
+      }
+      .note-text {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 16px;
+        color: var(--fg);
+        line-height: 1.5;
+        margin: 0;
+      }
+      .notes-expand {
+        margin-top: 4px;
+      }
+      .notes-expand summary {
+        font-family: var(--font-body);
+        font-size: 13px;
+        color: var(--fg-muted);
+        cursor: pointer;
+        list-style: none;
+      }
+      .notes-expand summary::-webkit-details-marker { display: none; }
+      .notes-expand summary::marker { display: none; content: ""; }
+      .notes-expand summary:hover { color: var(--fg); }
+      .notes-expand .notes-hidden {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 12px;
+      }
+
       /* ---- Sidebar ---- */
       .side {
         display: flex;
@@ -427,6 +497,7 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
           grid-template-columns: 1fr;
         }
         .adapt-body p { font-size: 24px; }
+        .note-text { font-size: 17px; }
         .app-cta h2 { font-size: 40px; }
       }
     </style>
@@ -492,16 +563,41 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
     </section>
 
     <!-- Body -->
-    <div class={`body-wrap${recipe.my_adaptations ? '' : ' body-wrap--single'}`}>
+    <div class={`body-wrap${hasNotes ? '' : ' body-wrap--single'}`}>
 
-      {/* Main column — only when there's a note */}
-      {recipe.my_adaptations && (
+      {/* Main column — only when there are notes */}
+      {hasNotes && latestNote && (
         <div>
           <article class="adapt-block">
-            <p class="eyebrow">{ownerName}&rsquo;s note</p>
+            <p class="eyebrow">{ownerName}&rsquo;s {notes.length === 1 ? 'note' : 'notes'}</p>
             <div class="adapt-body">
-              <p>{recipe.my_adaptations}</p>
+              <p>{latestNote.note}</p>
             </div>
+
+            {visibleOlder.length > 0 && (
+              <div class="notes-list">
+                {visibleOlder.map((n) => (
+                  <div class="note-row">
+                    <span class="note-date">{n.dateLabel}</span>
+                    <p class="note-text">{n.note}</p>
+                  </div>
+                ))}
+
+                {hiddenOlder.length > 0 && (
+                  <details class="notes-expand">
+                    <summary>show {hiddenOlder.length} more {hiddenOlder.length === 1 ? 'note' : 'notes'}</summary>
+                    <div class="notes-hidden">
+                      {hiddenOlder.map((n) => (
+                        <div class="note-row">
+                          <span class="note-date">{n.dateLabel}</span>
+                          <p class="note-text">{n.note}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                )}
+              </div>
+            )}
           </article>
 
           {/* Instructions — Tier 1 only */}
