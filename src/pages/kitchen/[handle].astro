@@ -15,7 +15,7 @@ if (!profile) {
 
 const { data: recipes } = await supabase
   .from('recipes')
-  .select('id, name, source, link, attribution, cookbook_name, my_adaptations, is_original, recipe_status, auto_tags, kitchen_section')
+  .select('id, name, source, link, attribution, cookbook_name, is_original, recipe_status, auto_tags, kitchen_section')
   .eq('household_id', profile.household_id)
   .eq('recipe_status', 'keeper')
   .or('is_hidden.eq.false,is_hidden.is.null')
@@ -29,11 +29,6 @@ const initials = profile.display_name
   .toUpperCase()
   .slice(0, 2);
 const pageTitle = `${profile.display_name}'s kitchen · Kalamansi`;
-
-function truncate(text: string, max: number): string {
-  if (text.length <= max) return text;
-  return text.slice(0, max).trimEnd() + '\u2026';
-}
 
 const SMALL_WORDS = new Set([
   'a','an','the','and','but','or','for','nor',
@@ -359,15 +354,6 @@ for (const r of (recipes ?? [])) {
         line-height: 1.18;
         margin: 0;
       }
-      .note {
-        font-family: var(--font-display);
-        font-style: italic;
-        font-size: 15px;
-        color: #5C5650;
-        line-height: 1.5;
-        margin: 4px 0 0;
-      }
-
       /* ─── CTA ──────────────────────────────────── */
       .cta {
         background: var(--warm-card);
@@ -507,9 +493,6 @@ for (const r of (recipes ?? [])) {
                       <div class="src">From <strong>{recipe.cookbook_name}</strong></div>
                     ) : null}
                     <h3 class="dish">{toTitleCase(recipe.name)}</h3>
-                    {recipe.my_adaptations && (
-                      <p class="note">{truncate(recipe.my_adaptations, 100)}</p>
-                    )}
                   </div>
                 </a>
               ))}
