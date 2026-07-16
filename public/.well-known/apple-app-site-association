@@ -16,6 +16,14 @@
           {
             "/": "/kitchen/*",
             "comment": "Matches kitchen page links"
+          },
+          {
+            "/": "/reset-password",
+            "comment": "Matches the password reset landing URL"
+          },
+          {
+            "/": "/reset-password/*",
+            "comment": "Matches password reset child paths"
           }
         ]
       }
