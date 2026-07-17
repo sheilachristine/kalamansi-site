@@ -56,7 +56,9 @@ const notes = (noteRows ?? []).map((row) => ({
     : "earlier",
 }));
 
+const myNotes = recipe.my_notes?.trim() || null;
 const hasNotes = notes.length > 0;
+const hasMainColumn = myNotes || hasNotes;
 const latestNote = hasNotes ? notes[0] : null;
 const olderNotes = notes.slice(1);
 const VISIBLE_OLDER = 2;
@@ -267,6 +269,28 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
       .adapt-body p strong {
         font-style: normal;
         font-weight: 600;
+      }
+
+      /* ---- Standing note (my_notes) ---- */
+      .standing-note {
+        background: var(--warm-card);
+        border-radius: var(--r-card);
+        padding: 24px;
+        margin-bottom: 32px;
+      }
+      .standing-note .eyebrow { margin-bottom: 12px; }
+      .standing-note-body {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 21px;
+        color: var(--fg);
+        line-height: 1.55;
+        margin: 0;
+        text-wrap: pretty;
+        white-space: pre-line;
+      }
+      @media (min-width: 800px) {
+        .standing-note-body { font-size: 24px; }
       }
 
       /* ---- Older notes list ---- */
@@ -563,43 +587,51 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
     </section>
 
     <!-- Body -->
-    <div class={`body-wrap${hasNotes ? '' : ' body-wrap--single'}`}>
+    <div class={`body-wrap${hasMainColumn ? '' : ' body-wrap--single'}`}>
 
-      {/* Main column — only when there are notes */}
-      {hasNotes && latestNote && (
+      {/* Main column — standing note + cook notes */}
+      {hasMainColumn && (
         <div>
-          <article class="adapt-block">
-            <p class="eyebrow">{ownerName}&rsquo;s {notes.length === 1 ? 'note' : 'notes'}</p>
-            <div class="adapt-body">
-              <p>{latestNote.note}</p>
-            </div>
-            <p class="note-date" style="margin: 8px 0 0;">{latestNote.dateLabel}</p>
-
-            {visibleOlder.length > 0 && (
-              <div class="notes-list">
-                {visibleOlder.map((n) => (
-                  <div class="note-row">
-                    <span class="note-date">{n.dateLabel}</span>
-                    <p class="note-text">{n.note}</p>
-                  </div>
-                ))}
-
-                {hiddenOlder.length > 0 && (
-                  <details class="notes-expand">
-                    <summary>show {hiddenOlder.length} more {hiddenOlder.length === 1 ? 'note' : 'notes'}</summary>
-                    <div class="notes-hidden">
-                      {hiddenOlder.map((n) => (
-                        <div class="note-row">
-                          <span class="note-date">{n.dateLabel}</span>
-                          <p class="note-text">{n.note}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </details>
-                )}
+          {myNotes && (
+            <section class="standing-note">
+              <p class="eyebrow">{ownerName}&rsquo;s notes</p>
+              <p class="standing-note-body">{myNotes}</p>
+            </section>
+          )}
+          {hasNotes && latestNote && (
+            <article class="adapt-block">
+              <p class="eyebrow">Cook {notes.length === 1 ? 'note' : 'notes'}</p>
+              <div class="adapt-body">
+                <p>{latestNote.note}</p>
               </div>
-            )}
-          </article>
+              <p class="note-date" style="margin: 8px 0 0;">{latestNote.dateLabel}</p>
+
+              {visibleOlder.length > 0 && (
+                <div class="notes-list">
+                  {visibleOlder.map((n) => (
+                    <div class="note-row">
+                      <span class="note-date">{n.dateLabel}</span>
+                      <p class="note-text">{n.note}</p>
+                    </div>
+                  ))}
+
+                  {hiddenOlder.length > 0 && (
+                    <details class="notes-expand">
+                      <summary>show {hiddenOlder.length} more {hiddenOlder.length === 1 ? 'note' : 'notes'}</summary>
+                      <div class="notes-hidden">
+                        {hiddenOlder.map((n) => (
+                          <div class="note-row">
+                            <span class="note-date">{n.dateLabel}</span>
+                            <p class="note-text">{n.note}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  )}
+                </div>
+              )}
+            </article>
+          )}
 
           {/* Instructions — Tier 1 only */}
           {tier === 1 && instructions.length > 0 && (
