@@ -6,16 +6,17 @@
         "appIDs": ["P42H54CGU6.com.sheila.kalamansi"],
         "components": [
           {
+            "/": "/kitchen/*",
+            "exclude": true,
+            "comment": "Kitchen pages open in Safari, not the app"
+          },
+          {
             "/": "/invite/*",
             "comment": "Matches invite links"
           },
           {
             "/": "/recipe/*",
             "comment": "Matches recipe share links"
-          },
-          {
-            "/": "/kitchen/*",
-            "comment": "Matches kitchen page links"
           },
           {
             "/": "/reset-password",
