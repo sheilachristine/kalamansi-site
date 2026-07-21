@@ -1,26 +1,294 @@
 ---
-import Layout from '../layouts/Layout.astro';
+const pageTitle = "Kalamansi — your family's kitchen notebook";
+const pageDescription = "Kalamansi is a private cooking journal for families — log meals, keep recipes, and spot patterns in what you actually cook.";
+const requestAccessHref = "mailto:heysheila@gmail.com?subject=Requesting%20a%20Kalamansi%20invite";
 ---
 
-<Layout title="Kalamansi">
-  <h1>Kalamansi</h1>
-  <p>AI-powered meal logging, recipes, and nutrition insights.</p>
-  <p>Coming soon to iPhone.</p>
-  <p>
-    <a href="/privacy">Privacy</a>
-    <a href="/support">Support</a>
-  </p>
-</Layout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{pageTitle}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={pageDescription} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content="A private cooking journal for families. Log meals, keep recipes, spot patterns." />
+    <meta property="og:image" content="https://getkalamansi.com/cute-kalamansi.png" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/cute-kalamansi.png" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap"
+    />
+    <style>
+      :root {
+        --bg: #F0EEE9;
+        --surface: #FFFFFF;
+        --border: #E8E4DE;
+        --fg: #363230;
+        --fg-muted: #8C8480;
+        --fg-faint: #C4BFB9;
+        --fg-on-primary: #FFFFFF;
+        --primary: #6B7A2F;
+        --warm-card: #E8E3D8;
+        --warm-fg: #3A3028;
+        --warm-fg-muted: #6A5840;
+        --font-display: "Crimson Text", "Iowan Old Style", Georgia, serif;
+        --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --max-width: 1100px;
+        --bleed: 20px;
+      }
 
-<style>
-  body {
-    max-width: 720px;
-  }
-  h1 {
-    font-size: 48px;
-    margin-bottom: 8px;
-  }
-  a {
-    margin-right: 16px;
-  }
-</style>
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: var(--font-body);
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.5;
+      }
+      a { color: inherit; text-decoration: none; }
+
+      .header {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 24px var(--bleed) 0;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: fit-content;
+      }
+      .logo img {
+        width: 22px;
+        height: 22px;
+        border-radius: 5px;
+      }
+      .logo span {
+        font-size: 13px;
+        color: var(--fg-muted);
+        letter-spacing: 0.5px;
+      }
+
+      .hero {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 64px var(--bleed) 32px;
+        text-align: center;
+      }
+      .hero-eyebrow {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--fg-muted);
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin: 0 0 18px;
+      }
+      .hero-title {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: clamp(34px, 6vw, 52px);
+        color: var(--fg);
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+        margin: 0 0 18px;
+      }
+      .hero-body {
+        font-size: 16px;
+        color: var(--fg-muted);
+        max-width: 34em;
+        margin: 0 auto 28px;
+        line-height: 1.55;
+      }
+      .hero-cta {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--primary);
+        color: var(--fg-on-primary);
+        font-size: 15px;
+        font-weight: 600;
+        padding: 13px 26px;
+        border-radius: 999px;
+      }
+      .btn-primary .arrow { font-size: 14px; }
+      .hero-cta-note {
+        font-size: 12px;
+        color: var(--fg-faint);
+      }
+
+      .features {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 40px var(--bleed);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+      }
+      .feature-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .feature-glyph { font-size: 26px; }
+      .feature-title {
+        font-family: var(--font-body);
+        font-weight: 600;
+        font-size: 17px;
+        color: var(--fg);
+        margin: 4px 0 0;
+      }
+      .feature-body {
+        font-size: 14px;
+        color: var(--fg-muted);
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      .quote {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 24px var(--bleed) 56px;
+        text-align: center;
+      }
+      .quote p {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 22px;
+        color: var(--fg);
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      .cta-band {
+        background: var(--warm-card);
+        padding: 56px var(--bleed);
+      }
+      .cta-band-inner {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        text-align: center;
+      }
+      .cta-band-title {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 30px;
+        color: var(--warm-fg);
+        margin: 0 0 10px;
+        line-height: 1.15;
+      }
+      .cta-band-body {
+        font-size: 14px;
+        color: var(--warm-fg-muted);
+        margin: 0 0 20px;
+        max-width: 30em;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.55;
+      }
+      .btn-warm {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--warm-fg);
+        color: var(--bg);
+        font-size: 15px;
+        font-weight: 600;
+        padding: 12px 24px;
+        border-radius: 999px;
+      }
+
+      .footer {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 28px var(--bleed) 48px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        font-size: 12px;
+        color: var(--fg-faint);
+      }
+      .footer-links {
+        display: flex;
+        gap: 20px;
+      }
+      .footer-links a { color: var(--fg-muted); }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <a href="/" class="logo">
+        <img src="/cute-kalamansi.png" alt="" />
+        <span>kalamansi</span>
+      </a>
+    </header>
+
+    <section class="hero">
+      <p class="hero-eyebrow">Your family's kitchen notebook</p>
+      <h1 class="hero-title">Cook it once.<br />Remember it forever.</h1>
+      <p class="hero-body">A private cooking journal for your household. Log what you made, keep the recipes worth repeating, and notice the patterns you'd otherwise forget.</p>
+      <div class="hero-cta">
+        <a href={requestAccessHref} class="btn-primary">Get Kalamansi <span class="arrow">→</span></a>
+        <span class="hero-cta-note">Free on iOS and Android</span>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="feature-card">
+        <span class="feature-glyph">🍽️</span>
+        <h3 class="feature-title">Log meals</h3>
+        <p class="feature-body">What you cooked, who ate, how it landed. Takes seconds.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-glyph">📖</span>
+        <h3 class="feature-title">Track recipes</h3>
+        <p class="feature-body">Your family cookbook — from links, cookbooks, or memory.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-glyph">📊</span>
+        <h3 class="feature-title">Spot patterns</h3>
+        <p class="feature-body">What's on rotation, what's been forgotten, what your family loves.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-glyph">🛒</span>
+        <h3 class="feature-title">Build the grocery list</h3>
+        <p class="feature-body">Recipes you're planning to cook turn straight into what to buy.</p>
+      </div>
+    </section>
+
+    <section class="quote">
+      <p>&ldquo;The night I stopped forgetting we'd already made this twice that week.&rdquo;</p>
+    </section>
+
+    <section class="cta-band">
+      <div class="cta-band-inner">
+        <h2 class="cta-band-title">Build your own kitchen notebook.</h2>
+        <p class="cta-band-body">Kalamansi is a private notebook for the things you actually cook — not a feed, not a planner, just your family's own record.</p>
+        <a href={requestAccessHref} class="btn-warm">Get Kalamansi <span class="arrow">→</span></a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>getkalamansi.com</span>
+      <div class="footer-links">
+        <a href="/privacy">Privacy</a>
+        <a href="/support">Support</a>
+      </div>
+    </footer>
+  </body>
+</html>
