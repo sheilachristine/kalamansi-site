@@ -1,5 +1,16 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+
+const { slug } = Astro.params;
+
+// Real invite links always carry a code (getkalamansi.com/invite/{code}).
+// app.getkalamansi.com/invite/:code already has a complete, working
+// accept flow (invite lookup, expiry/used-state handling, signup/login,
+// auto-accept) — so hand the code straight to it instead of showing
+// generic copy that discards it.
+if (slug) {
+  return Astro.redirect(`https://app.getkalamansi.com/invite/${slug}`, 302);
+}
 ---
 
 <Layout title="Join Kalamansi">
