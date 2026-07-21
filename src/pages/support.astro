@@ -1,8 +1,238 @@
 ---
-import Layout from '../layouts/Layout.astro';
+const pageTitle = "Support · Kalamansi";
+const pageDescription = "Here to help — answers to what comes up most.";
+const supportEmail = "heysheila@gmail.com";
+
+const faqs = [
+  { q: "How do I invite my household?", a: "Go to Settings → Household → Invite, then share the link or code with whoever you're cooking with. They'll see your shared log once they accept." },
+  { q: "Can I use Kalamansi alone, without a household?", a: "Yes. A household can be just you — invite others any time later." },
+  { q: "Where do my recipes come from?", a: "Add them from a link, a cookbook, or from memory. Kalamansi keeps your note alongside the source, not a copy of someone else's instructions." },
+  { q: "Is my data private?", a: "Yes. Only people you've invited to your household can see what you log. Nothing is public by default." },
+  { q: "How do I delete a meal or recipe I logged by mistake?", a: "Swipe left on it in your log or recipe list, then tap Delete. This can't be undone." },
+];
 ---
 
-<Layout title="Support - Kalamansi">
-  <h1>Support</h1>
-  <p>For support, email: heysheila@gmail.com</p>
-</Layout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{pageTitle}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={pageDescription} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:image" content="https://getkalamansi.com/cute-kalamansi.png" />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="/cute-kalamansi.png" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap"
+    />
+    <style>
+      :root {
+        --bg: #F0EEE9;
+        --surface: #FFFFFF;
+        --border: #E8E4DE;
+        --fg: #363230;
+        --fg-muted: #8C8480;
+        --fg-faint: #C4BFB9;
+        --warm-card: #E8E3D8;
+        --warm-fg: #3A3028;
+        --warm-fg-muted: #6A5840;
+        --font-display: "Crimson Text", "Iowan Old Style", Georgia, serif;
+        --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --max-width: 760px;
+        --bleed: 20px;
+      }
+
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: var(--font-body);
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.5;
+      }
+      a { color: inherit; text-decoration: none; }
+
+      .header {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 24px var(--bleed) 0;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: fit-content;
+      }
+      .logo img {
+        width: 22px;
+        height: 22px;
+        border-radius: 5px;
+      }
+      .logo span {
+        font-size: 13px;
+        color: var(--fg-muted);
+        letter-spacing: 0.5px;
+      }
+
+      .intro {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 48px var(--bleed) 8px;
+        text-align: center;
+      }
+      .intro h1 {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 40px;
+        color: var(--fg);
+        letter-spacing: -0.01em;
+        margin: 0 0 8px;
+      }
+      .intro p {
+        font-size: 15px;
+        color: var(--fg-muted);
+        margin: 0;
+      }
+
+      .faqs {
+        max-width: var(--max-width);
+        margin: 32px auto 0;
+        padding: 0 var(--bleed);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .faq {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .faq summary {
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        cursor: pointer;
+        list-style: none;
+      }
+      .faq summary::-webkit-details-marker { display: none; }
+      .faq-q {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--fg);
+      }
+      .faq-glyph {
+        font-size: 16px;
+        color: var(--fg-muted);
+        flex-shrink: 0;
+      }
+      .faq-glyph::before { content: "+"; }
+      .faq[open] .faq-glyph::before { content: "–"; }
+      .faq-a {
+        margin: 0;
+        padding: 0 18px 16px;
+        font-size: 14px;
+        color: var(--fg-muted);
+        line-height: 1.55;
+      }
+
+      .cta-band {
+        background: var(--warm-card);
+        margin-top: 48px;
+        padding: 40px var(--bleed);
+      }
+      .cta-band-inner {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        text-align: center;
+      }
+      .cta-band-title {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 24px;
+        color: var(--warm-fg);
+        margin: 0 0 8px;
+      }
+      .cta-band-body {
+        font-size: 14px;
+        color: var(--warm-fg-muted);
+        margin: 0 0 16px;
+      }
+      .btn-warm {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--warm-fg);
+        color: var(--bg);
+        font-size: 14px;
+        font-weight: 600;
+        padding: 11px 20px;
+        border-radius: 999px;
+      }
+
+      .footer {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 28px var(--bleed) 48px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        font-size: 12px;
+        color: var(--fg-faint);
+      }
+      .footer-links {
+        display: flex;
+        gap: 20px;
+      }
+      .footer-links a { color: var(--fg-muted); }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <a href="/" class="logo">
+        <img src="/cute-kalamansi.png" alt="" />
+        <span>kalamansi</span>
+      </a>
+    </header>
+
+    <section class="intro">
+      <h1>Support</h1>
+      <p>Here to help — answers to what comes up most.</p>
+    </section>
+
+    <section class="faqs">
+      {faqs.map((f) => (
+        <details class="faq">
+          <summary>
+            <span class="faq-q">{f.q}</span>
+            <span class="faq-glyph"></span>
+          </summary>
+          <p class="faq-a">{f.a}</p>
+        </details>
+      ))}
+    </section>
+
+    <section class="cta-band">
+      <div class="cta-band-inner">
+        <h2 class="cta-band-title">Still stuck?</h2>
+        <p class="cta-band-body">We read every message — usually within a day.</p>
+        <a href={`mailto:${supportEmail}`} class="btn-warm">Email {supportEmail}</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>getkalamansi.com</span>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/privacy">Privacy</a>
+      </div>
+    </footer>
+  </body>
+</html>
