@@ -1,21 +1,18 @@
 ---
 import { supabase } from "../../lib/supabase";
-import { getShareTier, getShareTierLabel } from "../../lib/shareUtils";
+import { getShareTier } from "../../lib/shareUtils";
 
 const { id } = Astro.params;
 
-const { data: recipe, error } = await supabase
-  .from("recipes")
-  .select("*")
-  .eq("id", Number(id))
-  .single();
+const { data: recipe } = await supabase
+  .rpc("get_public_recipe", { p_recipe_id: Number(id) })
+  .maybeSingle();
 
-if (error || !recipe || recipe.recipe_status !== 'keeper' || recipe.is_hidden) {
+if (!recipe) {
   return new Response(null, { status: 404, statusText: "Not found" });
 }
 
 const tier = getShareTier(recipe.source, recipe.is_original);
-const tierLabel = getShareTierLabel(tier);
 
 // Fetch ingredients from the separate table
 const { data: ingredientRows } = await supabase
@@ -24,13 +21,13 @@ const { data: ingredientRows } = await supabase
   .eq("recipe_id", Number(id))
   .order("id", { ascending: true });
 
-// Parse instructions for Tier 1
-const instructions: string[] =
-  tier === 1
-    ? typeof recipe.instructions === "string"
-      ? JSON.parse(recipe.instructions)
-      : recipe.instructions ?? []
-    : [];
+// Instructions are only returned by the RPC for original (Tier 1) recipes;
+// non-original recipes get null from the server.
+const instructions: string[] = recipe.instructions
+  ? typeof recipe.instructions === "string"
+    ? JSON.parse(recipe.instructions)
+    : recipe.instructions
+  : [];
 
 const { data: ownerProfile } = await supabase
   .from('user_profiles')
@@ -633,8 +630,8 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
             </article>
           )}
 
-          {/* Instructions — Tier 1 only */}
-          {tier === 1 && instructions.length > 0 && (
+          {/* Instructions (server only returns these for original recipes) */}
+          {instructions.length > 0 && (
             <section class="instructions">
               <p class="eyebrow">Instructions</p>
               <ol>
