@@ -665,9 +665,9 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
             Keep {ownerName}&rsquo;s note in your own kitchen notebook. Log when
             you cook it, jot your own tweaks, share with your household.
           </p>
-          <a class="btn" href={`/recipe-save/${id}`}>
+          <button class="btn" type="button" id="save-cta">
             Save to try <span style="font-size:13px;">&rarr;</span>
-          </a>
+          </button>
         </section>
       </aside>
     </div>
@@ -716,6 +716,18 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
         </a>
       </div>
     </section>
+
+    <script define:vars={{ id }}>
+      document.getElementById('save-cta').addEventListener('click', function () {
+        this.disabled = true;
+        window.location.href = 'kalamansi://recipe-save/' + id;
+        setTimeout(function () {
+          if (!document.hidden) {
+            window.location.href = '/recipe-save/' + id;
+          }
+        }, 1500);
+      });
+    </script>
 
   </body>
 </html>
