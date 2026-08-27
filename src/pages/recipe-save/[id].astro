@@ -1,0 +1,8 @@
+---
+// Fallback for users who don't have the app installed.
+// When the app IS installed, the universal link (AASA/intent filter) opens
+// the native recipe-save screen directly and this page is never reached.
+// When the app is NOT installed, redirect to the public recipe page.
+const { id } = Astro.params;
+return Astro.redirect(`/recipe/${id}`, 302);
+---
