@@ -1,8 +1,141 @@
 ---
 // Fallback for users who don't have the app installed.
-// When the app IS installed, the universal link (AASA/intent filter) opens
+// When the app IS installed, the custom URL scheme or universal link opens
 // the native recipe-save screen directly and this page is never reached.
-// When the app is NOT installed, redirect to the public recipe page.
+// When the app is NOT installed, show an install interstitial.
+import { supabase } from "../../lib/supabase";
+
 const { id } = Astro.params;
-return Astro.redirect(`/recipe/${id}`, 302);
+
+const { data } = await supabase
+  .rpc("get_public_recipe", { p_recipe_id: Number(id) })
+  .maybeSingle();
+const recipe = data as any;
+
+const recipeName = recipe?.name ?? null;
+const sourceDomain = recipe?.link
+  ? new URL(recipe.link).hostname.replace(/^www\./, "")
+  : null;
+const sourceLine = recipe?.attribution ?? recipe?.cookbook_name ?? sourceDomain;
 ---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{recipeName ? `${recipeName} · ` : ""}Save to try · Kalamansi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@600&family=Inter:wght@400;500;600&display=swap"
+    />
+    <style>
+      :root {
+        --bg: #F0EEE9;
+        --surface: #FFFFFF;
+        --border: #E8E4DE;
+        --fg: #363230;
+        --fg-muted: #8C8480;
+        --warm-fg: #3A3028;
+        --font-display: "Crimson Text", Georgia, serif;
+        --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: var(--font-body);
+        -webkit-font-smoothing: antialiased;
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 32px 28px;
+        max-width: 420px;
+        width: 100%;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+      .eyebrow {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+        margin: 0 0 12px;
+      }
+      h1 {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 28px;
+        color: var(--fg);
+        margin: 0;
+        line-height: 1.2;
+      }
+      .source {
+        font-size: 14px;
+        color: var(--fg-muted);
+        margin: 4px 0 0;
+      }
+      .message {
+        font-size: 14px;
+        color: var(--fg-muted);
+        line-height: 1.55;
+        margin: 16px 0 0;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--warm-fg);
+        color: var(--bg);
+        font-family: var(--font-body);
+        font-size: 14px;
+        font-weight: 600;
+        padding: 12px 24px;
+        border-radius: 999px;
+        text-decoration: none;
+        margin-top: 20px;
+      }
+      .btn:hover { background: #2A2420; }
+      .back {
+        display: inline-block;
+        margin-top: 14px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--fg-muted);
+        text-decoration: none;
+      }
+      .back:hover { color: var(--fg); }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <p class="eyebrow">Save to try</p>
+      {recipeName ? (
+        <h1>{recipeName}</h1>
+      ) : (
+        <h1>This recipe</h1>
+      )}
+      {sourceLine && <p class="source">{sourceLine}</p>}
+      <p class="message">
+        Get the Kalamansi app to save this recipe to your kitchen.
+      </p>
+      <a class="btn" href="/">
+        Get Kalamansi <span style="font-size:13px;">&rarr;</span>
+      </a>
+      <a class="back" href={`/recipe/${id}`}>View recipe</a>
+    </div>
+  </body>
+</html>
