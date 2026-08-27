@@ -19,6 +19,10 @@
             "comment": "Matches recipe share links"
           },
           {
+            "/": "/recipe-save/*",
+            "comment": "Matches recipe bookmark save links"
+          },
+          {
             "/": "/reset-password",
             "comment": "Matches the password reset landing URL"
           },
