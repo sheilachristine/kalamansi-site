@@ -353,6 +353,7 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
       .save-quick-wrap {
         display: flex;
         justify-content: flex-start;
+        align-self: start;
       }
       .save-quick {
         display: inline-flex;
@@ -561,7 +562,7 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
         .body-wrap {
           grid-template-columns: minmax(0, 1.4fr) minmax(280px, 340px);
           grid-auto-flow: dense;
-          gap: 64px;
+          gap: 32px 64px;
           margin-top: 48px;
           padding-bottom: 96px;
         }
