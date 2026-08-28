@@ -239,6 +239,7 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
       .meta {
         font-size: 13px;
         color: var(--fg-muted);
+        margin-top: 8px;
         display: flex;
         flex-wrap: wrap;
         gap: 14px;
@@ -248,7 +249,7 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
       /* ---- Body layout ---- */
       .body-wrap {
         max-width: var(--max-width);
-        margin: 32px auto 0;
+        margin: 24px auto 0;
         padding: 0 var(--bleed) 64px;
         display: grid;
         grid-template-columns: 1fr;
@@ -563,7 +564,7 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
           grid-template-columns: minmax(0, 1.4fr) minmax(280px, 340px);
           grid-auto-flow: dense;
           gap: 32px 64px;
-          margin-top: 48px;
+          margin-top: 32px;
           padding-bottom: 96px;
         }
         .body-wrap--single {
@@ -627,16 +628,16 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
           From <strong>{recipe.cookbook_name}</strong>
         </div>
       )}
-      <div class="meta">
-        {recipe.cook_count != null && recipe.cook_count > 0 && (
+      {recipe.cook_count != null && recipe.cook_count > 0 && (
+        <div class="meta">
           <span>
             {ownerName} cooked this{" "}
             <strong style="color:var(--fg);font-weight:500;">
               {recipe.cook_count} {recipe.cook_count === 1 ? "time" : "times"}
             </strong>
           </span>
-        )}
-      </div>
+        </div>
+      )}
     </section>
 
     <div class="save-quick-wrap">
