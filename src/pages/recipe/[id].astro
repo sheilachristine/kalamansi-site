@@ -23,11 +23,22 @@ const { data: ingredientRows } = await supabase
 
 // Instructions are only returned by the RPC for original (Tier 1) recipes;
 // non-original recipes get null from the server.
-const instructions: string[] = recipe.instructions
-  ? typeof recipe.instructions === "string"
-    ? JSON.parse(recipe.instructions)
-    : recipe.instructions
-  : [];
+// The jsonb value may be a JSON array of strings or a bare string with
+// newline-separated steps. Handle both without throwing.
+function parseInstructions(raw: unknown): string[] {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw.filter((s) => typeof s === "string" && s.trim());
+  if (typeof raw === "string") {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed.filter((s) => typeof s === "string" && s.trim());
+    } catch {}
+    // Plain text: split on newlines
+    return raw.split("\n").map((s) => s.trim()).filter(Boolean);
+  }
+  return [];
+}
+const instructions = parseInstructions(recipe.instructions);
 
 const { data: ownerProfile } = await supabase
   .from('user_profiles')
