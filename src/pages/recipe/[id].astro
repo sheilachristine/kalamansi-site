@@ -351,9 +351,9 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
       }
 
       .save-quick-wrap {
-        display: flex;
-        justify-content: flex-start;
-        align-self: start;
+        max-width: var(--max-width);
+        margin: 16px auto 0;
+        padding: 0 var(--bleed);
       }
       .save-quick {
         display: inline-flex;
@@ -569,7 +569,6 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
         .body-wrap--single {
           grid-template-columns: 1fr;
         }
-        .body-wrap:not(.body-wrap--single) .save-quick-wrap { grid-column: 2; }
         .body-wrap:not(.body-wrap--single) .ingredients { grid-column: 2; }
         .body-wrap:not(.body-wrap--single) .notes-column { grid-column: 1; grid-row: 1; }
         .body-wrap:not(.body-wrap--single) .instructions { grid-column: 1; }
@@ -640,15 +639,15 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
       </div>
     </section>
 
+    <div class="save-quick-wrap">
+      <button class="save-quick" type="button" id="save-cta-top">
+        <span aria-hidden="true">+</span>
+        Save to try
+      </button>
+    </div>
+
     <!-- Body -->
     <div class={`body-wrap${hasMainColumn ? '' : ' body-wrap--single'}`}>
-
-      <div class="save-quick-wrap">
-        <button class="save-quick" type="button" id="save-cta-top">
-          <span aria-hidden="true">+</span>
-          Save to try
-        </button>
-      </div>
 
       {/* Ingredients */}
       {ingredientRows && ingredientRows.length > 0 && (
