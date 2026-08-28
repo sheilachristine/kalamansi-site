@@ -346,6 +346,27 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
         gap: 24px;
       }
 
+      .save-quick {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        min-height: 42px;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        color: var(--primary);
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .save-quick:hover {
+        border-color: var(--primary);
+        background: rgba(107, 122, 47, 0.06);
+      }
+
       /* ---- Ingredients card ---- */
       .ingredients {
         background: var(--surface);
@@ -646,6 +667,11 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
 
       <!-- Sidebar -->
       <aside class="side">
+        <button class="save-quick" type="button" id="save-cta-top">
+          <span aria-hidden="true">+</span>
+          Save to try
+        </button>
+
         {/* Ingredients */}
         {ingredientRows && ingredientRows.length > 0 && (
           <section class="ingredients">
@@ -718,14 +744,22 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
     </section>
 
     <script define:vars={{ id }}>
-      document.getElementById('save-cta').addEventListener('click', function () {
-        this.disabled = true;
+      function openRecipeSave(button) {
+        button.disabled = true;
         window.location.href = 'kalamansi://recipe-save/' + id;
         setTimeout(function () {
           if (!document.hidden) {
             window.location.href = '/recipe-save/' + id;
           }
         }, 1500);
+      }
+
+      document.getElementById('save-cta-top')?.addEventListener('click', function () {
+        openRecipeSave(this);
+      });
+
+      document.getElementById('save-cta').addEventListener('click', function () {
+        openRecipeSave(this);
       });
     </script>
 
