@@ -560,11 +560,11 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
         .title-block { margin-top: 40px; }
         .body-wrap {
           grid-template-columns: minmax(0, 1.4fr) minmax(280px, 340px);
+          grid-auto-flow: dense;
           gap: 64px;
           margin-top: 48px;
           padding-bottom: 96px;
         }
-        .body-wrap { grid-auto-flow: dense; }
         .body-wrap--single {
           grid-template-columns: 1fr;
         }
@@ -572,7 +572,7 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
         .body-wrap:not(.body-wrap--single) .ingredients { grid-column: 2; }
         .body-wrap:not(.body-wrap--single) .notes-column { grid-column: 1; grid-row: 1; }
         .body-wrap:not(.body-wrap--single) .instructions { grid-column: 1; }
-        .body-wrap:not(.body-wrap--single) .save-cta { grid-column: 2; }
+        .body-wrap:not(.body-wrap--single) .save-cta { grid-column: 1 / -1; }
         .adapt-body p { font-size: 24px; }
         .note-text { font-size: 17px; }
         .app-cta h2 { font-size: 40px; }
