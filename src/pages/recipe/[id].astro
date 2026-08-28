@@ -55,7 +55,7 @@ const notes = (noteRows ?? []).map((row) => ({
 
 const myNotes = recipe.my_notes?.trim() || null;
 const hasNotes = notes.length > 0;
-const hasMainColumn = myNotes || hasNotes;
+const hasMainColumn = myNotes || hasNotes || instructions.length > 0;
 const latestNote = hasNotes ? notes[0] : null;
 const olderNotes = notes.slice(1);
 const VISIBLE_OLDER = 2;
