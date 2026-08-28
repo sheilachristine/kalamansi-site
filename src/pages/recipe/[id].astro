@@ -650,31 +650,6 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
     <!-- Body -->
     <div class={`body-wrap${hasMainColumn ? '' : ' body-wrap--single'}`}>
 
-      {/* Ingredients */}
-      {ingredientRows && ingredientRows.length > 0 && (
-        <section class="ingredients">
-          <p class="eyebrow">What you&rsquo;ll need</p>
-          <ul>
-            {ingredientRows.map((ing) => (
-              <li>{ing.raw_text ?? ing.canonical_name}</li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {/* Instructions (server only returns these for original recipes) */}
-      {instructions.length > 0 && (
-        <section class="instructions">
-          <p class="eyebrow">Instructions</p>
-          {instructions.map((step: string, i: number) => (
-            <div class="step">
-              <span class="step-num">{i + 1}</span>
-              <p class="step-text">{step}</p>
-            </div>
-          ))}
-        </section>
-      )}
-
       {/* Notes */}
       {(myNotes || hasNotes) && (
         <div class="notes-column">
@@ -719,6 +694,31 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
             </article>
           )}
         </div>
+      )}
+
+      {/* Ingredients */}
+      {ingredientRows && ingredientRows.length > 0 && (
+        <section class="ingredients">
+          <p class="eyebrow">What you&rsquo;ll need</p>
+          <ul>
+            {ingredientRows.map((ing) => (
+              <li>{ing.raw_text ?? ing.canonical_name}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Instructions (server only returns these for original recipes) */}
+      {instructions.length > 0 && (
+        <section class="instructions">
+          <p class="eyebrow">Instructions</p>
+          {instructions.map((step: string, i: number) => (
+            <div class="step">
+              <span class="step-num">{i + 1}</span>
+              <p class="step-text">{step}</p>
+            </div>
+          ))}
+        </section>
       )}
 
       {/* Save CTA card */}
