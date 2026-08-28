@@ -350,18 +350,9 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
         margin-top: 12px;
       }
 
-      /* ---- Sidebar ---- */
-      .side {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-      }
-
       .save-quick-wrap {
         display: flex;
         justify-content: flex-start;
-        margin-top: -16px;
-        margin-bottom: -8px;
       }
       .save-quick {
         display: inline-flex;
@@ -550,12 +541,15 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
           margin-top: 48px;
           padding-bottom: 96px;
         }
+        .body-wrap { grid-auto-flow: dense; }
         .body-wrap--single {
           grid-template-columns: 1fr;
         }
-        .save-quick-wrap {
-          margin-top: -24px;
-        }
+        .body-wrap:not(.body-wrap--single) .save-quick-wrap { grid-column: 2; }
+        .body-wrap:not(.body-wrap--single) .ingredients { grid-column: 2; }
+        .body-wrap:not(.body-wrap--single) .notes-column { grid-column: 1; grid-row: 1; }
+        .body-wrap:not(.body-wrap--single) .instructions { grid-column: 1; }
+        .body-wrap:not(.body-wrap--single) .save-cta { grid-column: 2; }
         .adapt-body p { font-size: 24px; }
         .note-text { font-size: 17px; }
         .app-cta h2 { font-size: 40px; }
@@ -625,9 +619,40 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
     <!-- Body -->
     <div class={`body-wrap${hasMainColumn ? '' : ' body-wrap--single'}`}>
 
-      {/* Main column — standing note + cook notes */}
-      {hasMainColumn && (
-        <div>
+      <div class="save-quick-wrap">
+        <button class="save-quick" type="button" id="save-cta-top">
+          <span aria-hidden="true">+</span>
+          Save to try
+        </button>
+      </div>
+
+      {/* Ingredients */}
+      {ingredientRows && ingredientRows.length > 0 && (
+        <section class="ingredients">
+          <p class="eyebrow">What you&rsquo;ll need</p>
+          <ul>
+            {ingredientRows.map((ing) => (
+              <li>{ing.raw_text ?? ing.canonical_name}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Instructions (server only returns these for original recipes) */}
+      {instructions.length > 0 && (
+        <section class="instructions">
+          <p class="eyebrow">Instructions</p>
+          <ol>
+            {instructions.map((step: string) => (
+              <li>{step}</li>
+            ))}
+          </ol>
+        </section>
+      )}
+
+      {/* Notes */}
+      {(myNotes || hasNotes) && (
+        <div class="notes-column">
           {myNotes && (
             <section class="standing-note">
               <p class="eyebrow">{ownerName}&rsquo;s notes</p>
@@ -668,54 +693,20 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
               )}
             </article>
           )}
-
-          {/* Instructions (server only returns these for original recipes) */}
-          {instructions.length > 0 && (
-            <section class="instructions">
-              <p class="eyebrow">Instructions</p>
-              <ol>
-                {instructions.map((step: string) => (
-                  <li>{step}</li>
-                ))}
-              </ol>
-            </section>
-          )}
         </div>
       )}
 
-      <!-- Sidebar -->
-      <aside class="side">
-        <div class="save-quick-wrap">
-          <button class="save-quick" type="button" id="save-cta-top">
-            <span aria-hidden="true">+</span>
-            Save to try
-          </button>
-        </div>
-
-        {/* Ingredients */}
-        {ingredientRows && ingredientRows.length > 0 && (
-          <section class="ingredients">
-            <p class="eyebrow">What you&rsquo;ll need</p>
-            <ul>
-              {ingredientRows.map((ing) => (
-                <li>{ing.raw_text ?? ing.canonical_name}</li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {/* Save CTA card */}
-        <section class="save-cta">
-          <h4>Save this in Kalamansi.</h4>
-          <p>
-            Keep {ownerName}&rsquo;s note in your own kitchen notebook. Log when
-            you cook it, jot your own tweaks, share with your household.
-          </p>
-          <button class="btn" type="button" id="save-cta">
-            Save to try <span style="font-size:13px;">&rarr;</span>
-          </button>
-        </section>
-      </aside>
+      {/* Save CTA card */}
+      <section class="save-cta">
+        <h4>Save this in Kalamansi.</h4>
+        <p>
+          Keep {ownerName}&rsquo;s note in your own kitchen notebook. Log when
+          you cook it, jot your own tweaks, share with your household.
+        </p>
+        <button class="btn" type="button" id="save-cta">
+          Save to try <span style="font-size:13px;">&rarr;</span>
+        </button>
+      </section>
     </div>
 
     <!-- Source footer (Tier 2 — link back to original) -->
