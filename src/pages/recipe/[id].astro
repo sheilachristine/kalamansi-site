@@ -397,19 +397,42 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
         padding-top: 0;
       }
 
-      /* ---- Instructions (Tier 1 only) ---- */
+      /* ---- Instructions card (Tier 1 only) ---- */
       .instructions {
-        padding: 0;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r-card);
+        padding: 24px;
       }
-      .instructions ol {
-        padding-left: 24px;
-        margin: 0;
+      .step {
+        display: grid;
+        grid-template-columns: 28px 1fr;
+        gap: 0 12px;
+        align-items: baseline;
+        padding: 13px 0;
+        border-top: 1px solid var(--border);
       }
-      .instructions li {
+      .step:first-child {
+        border-top: none;
+        padding-top: 0;
+      }
+      .step:last-child {
+        padding-bottom: 0;
+      }
+      .step-num {
+        font-family: var(--font-display);
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--primary);
+        text-align: right;
+        line-height: 1.4;
+      }
+      .step-text {
+        font-family: var(--font-body);
         font-size: 15px;
         color: var(--fg);
-        padding: 6px 0;
         line-height: 1.55;
+        margin: 0;
       }
 
       /* ---- CTA card ---- */
@@ -642,11 +665,12 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
       {instructions.length > 0 && (
         <section class="instructions">
           <p class="eyebrow">Instructions</p>
-          <ol>
-            {instructions.map((step: string) => (
-              <li>{step}</li>
-            ))}
-          </ol>
+          {instructions.map((step: string, i: number) => (
+            <div class="step">
+              <span class="step-num">{i + 1}</span>
+              <p class="step-text">{step}</p>
+            </div>
+          ))}
         </section>
       )}
 
