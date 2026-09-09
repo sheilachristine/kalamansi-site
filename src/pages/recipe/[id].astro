@@ -50,6 +50,16 @@ const ownerName = ownerProfile?.display_name ?? 'Sheila';
 const ownerHandle = ownerProfile?.handle ?? 'sheila';
 const sourceDomain = recipe.link ? new URL(recipe.link).hostname.replace(/^www\./, '') : null;
 
+// Tier 3 (cookbook) source line: book title and author joined, matching
+// native's recipe detail convention. Attribution is now required before a
+// cookbook scan, so it will normally be present; older rows may have only
+// one of the two fields (or neither, in which case this is empty and no
+// source line renders).
+const cookbookSourceLine =
+  tier === 3
+    ? [recipe.cookbook_name, recipe.attribution].filter(Boolean).join(" · ")
+    : "";
+
 // Fetch recipe notes (replaces my_adaptations)
 const { data: noteRows } = await supabase
   .from("recipe_adaptations")
@@ -623,9 +633,9 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
           )}
         </div>
       )}
-      {tier === 3 && recipe.cookbook_name && (
+      {tier === 3 && cookbookSourceLine && (
         <div class="source-line">
-          From <strong>{recipe.cookbook_name}</strong>
+          From <strong>{cookbookSourceLine}</strong>
         </div>
       )}
       {recipe.cook_count != null && recipe.cook_count > 0 && (
@@ -749,12 +759,12 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
       </section>
     )}
 
-    {/* Source footer (Tier 3 — cookbook name) */}
-    {tier === 3 && recipe.cookbook_name && (
+    {/* Source footer (Tier 3 — cookbook name and author) */}
+    {tier === 3 && cookbookSourceLine && (
       <section class="source-footer">
         <p class="eyebrow">Where the recipe came from</p>
         <span style="font-family:var(--font-display);font-style:italic;font-size:20px;">
-          {recipe.cookbook_name}
+          {cookbookSourceLine}
         </span>
       </section>
     )}

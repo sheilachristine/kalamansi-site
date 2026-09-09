@@ -482,11 +482,25 @@ for (const r of (recipes ?? [])) {
             </div>
             <h2 class="section-label">{s.label}</h2>
             <div class="grid k-cards">
-              {items.map((recipe) => (
+              {items.map((recipe) => {
+                // Cookbook-sourced recipes now reliably carry an attribution
+                // (required before a cookbook scan), so show book + author as
+                // one line, matching native's recipe detail convention:
+                // [cookbook_name, attribution].filter(Boolean).join(" · ").
+                // Link-sourced recipes keep the "Adapted from" phrasing.
+                const cookbookSrc =
+                  recipe.source === 'cookbook'
+                    ? [recipe.cookbook_name, recipe.attribution].filter(Boolean).join(" · ")
+                    : "";
+                return (
                 <a class="card" href={`/recipe/${recipe.id}`}>
                   <div class="card-body">
                     {recipe.is_original ? (
                       <span class="badge">Original</span>
+                    ) : recipe.source === 'cookbook' ? (
+                      cookbookSrc ? (
+                        <div class="src">From <strong>{cookbookSrc}</strong></div>
+                      ) : null
                     ) : recipe.attribution ? (
                       <div class="src">Adapted from <strong>{recipe.attribution}</strong></div>
                     ) : recipe.cookbook_name ? (
@@ -495,7 +509,8 @@ for (const r of (recipes ?? [])) {
                     <h3 class="dish">{toTitleCase(recipe.name)}</h3>
                   </div>
                 </a>
-              ))}
+                );
+              })}
             </div>
           </div>
         );
