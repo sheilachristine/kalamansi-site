@@ -72,9 +72,8 @@ const notes = (noteRows ?? []).map((row) => ({
     : "earlier",
 }));
 
-const myNotes = recipe.my_notes?.trim() || null;
 const hasNotes = notes.length > 0;
-const hasMainColumn = myNotes || hasNotes || instructions.length > 0;
+const hasMainColumn = hasNotes || instructions.length > 0;
 const latestNote = hasNotes ? notes[0] : null;
 const olderNotes = notes.slice(1);
 const VISIBLE_OLDER = 2;
@@ -286,28 +285,6 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
       .adapt-body p strong {
         font-style: normal;
         font-weight: 600;
-      }
-
-      /* ---- Standing note (my_notes) ---- */
-      .standing-note {
-        background: var(--warm-card);
-        border-radius: var(--r-card);
-        padding: 24px;
-        margin-bottom: 32px;
-      }
-      .standing-note .eyebrow { margin-bottom: 12px; }
-      .standing-note-body {
-        font-family: var(--font-display);
-        font-style: italic;
-        font-size: 21px;
-        color: var(--fg);
-        line-height: 1.55;
-        margin: 0;
-        text-wrap: pretty;
-        white-space: pre-line;
-      }
-      @media (min-width: 800px) {
-        .standing-note-body { font-size: 24px; }
       }
 
       /* ---- Older notes list ---- */
@@ -659,15 +636,9 @@ const pageTitle = `${recipe.name} · ${ownerName}'s kitchen`;
     <div class={`body-wrap${hasMainColumn ? '' : ' body-wrap--single'}`}>
 
       {/* Notes */}
-      {(myNotes || hasNotes) && (
+      {hasNotes && (
         <div class="notes-column">
-          {myNotes && (
-            <section class="standing-note">
-              <p class="eyebrow">{ownerName}&rsquo;s notes</p>
-              <p class="standing-note-body">{myNotes}</p>
-            </section>
-          )}
-          {hasNotes && latestNote && (
+          {latestNote && (
             <article class="adapt-block">
               <p class="eyebrow">Cook {notes.length === 1 ? 'note' : 'notes'}</p>
               <div class="adapt-body">
