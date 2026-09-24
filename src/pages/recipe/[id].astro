@@ -60,12 +60,10 @@ const cookbookSourceLine =
     ? [recipe.cookbook_name, recipe.attribution].filter(Boolean).join(" · ")
     : "";
 
-// Fetch recipe notes (replaces my_adaptations)
+// Fetch recipe notes: pinned notes only, newest first. The RPC returns
+// nothing unless the recipe is publicly visible.
 const { data: noteRows } = await supabase
-  .from("recipe_adaptations")
-  .select("note, created_at")
-  .eq("recipe_id", Number(id))
-  .order("created_at", { ascending: false, nullsFirst: false });
+  .rpc("get_public_recipe_notes", { p_recipe_id: Number(id) });
 
 const notes = (noteRows ?? []).map((row) => ({
   note: row.note,
